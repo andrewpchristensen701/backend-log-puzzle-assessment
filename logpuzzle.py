@@ -28,7 +28,19 @@ def read_urls(filename):
     extracting the hostname from the filename itself.
     Screens out duplicate urls and returns the urls sorted into
     increasing order."""
-    # +++your code here+++
+    domain_names = "http://" + filename.split("_")[1]
+
+    urls = []
+
+    pictures = re.findall(r'GET (\/.*?\.jpg)', open(filename).read())
+
+    for picture in pictures:
+        urls.append(domain_names + picture)
+
+    sortedlist = sorted(urls, key=lambda x: x.rsplit('-', 1)[-1])
+
+    return sortedlist
+
     pass
 
 
@@ -40,7 +52,22 @@ def download_images(img_urls, dest_dir):
     with an img tag to show each local image file.
     Creates the directory if necessary.
     """
-    # +++your code here+++
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
+
+    os.chdir(dest_dir)
+
+    img_tags = []
+
+    for url in img_urls:
+        name = url.split("/")[-1]
+
+        urllib.urlretrieve(url, os.getcwd() + "/" + name)
+
+        img_tags.append("<img src={}>".format(name))
+
+    html = open("index.html", "w")
+    html.write("<html><body>{0}</body></html>".format(''.join(img_tags)))
     pass
 
 
